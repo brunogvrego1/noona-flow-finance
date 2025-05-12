@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChartContainer } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -159,7 +158,10 @@ const BalanceModule = () => {
                     </svg>
                   );
                 }}
-                strokeDasharray={(data) => data.projected ? "5 5" : "0"}
+                strokeDasharray={
+                  // FIX: Use a static value for projected data points instead of a function
+                  "0"  // Default to solid line
+                }
               />
             </LineChart>
           </ChartContainer>
