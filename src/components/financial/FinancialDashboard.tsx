@@ -63,7 +63,7 @@ const FinancialDashboard = () => {
               {formatCurrency(12450)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              +18% {t('expense.list.description')}
+              +18% {t('summary.comparedToPreviousPeriod')}
             </p>
           </CardContent>
         </Card>
@@ -78,7 +78,7 @@ const FinancialDashboard = () => {
               {formatCurrency(4850)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              -3% {t('expense.list.description')}
+              -3% {t('summary.comparedToPreviousPeriod')}
             </p>
           </CardContent>
         </Card>
@@ -93,7 +93,7 @@ const FinancialDashboard = () => {
               {formatCurrency(7600)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              +32% {t('expense.list.description')}
+              +32% {t('summary.comparedToPreviousPeriod')}
             </p>
           </CardContent>
         </Card>
