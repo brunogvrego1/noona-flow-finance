@@ -6,11 +6,11 @@ import { ChartContainer } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 
-// Mock data
-const projectionData = [
+// Mock data base
+const allProjectionData = [
   { date: "13/05", confirmed: 1250, projected: 1250 },
   { date: "14/05", confirmed: 950, projected: 950 },
   { date: "15/05", confirmed: 850, projected: 850 },
@@ -26,17 +26,72 @@ const projectionData = [
   { date: "25/05", confirmed: 0, projected: 500 },
   { date: "26/05", confirmed: 0, projected: 1100 },
   { date: "27/05", confirmed: 0, projected: 1250 },
+  { date: "28/05", confirmed: 0, projected: 1050 },
+  { date: "29/05", confirmed: 0, projected: 950 },
+  { date: "30/05", confirmed: 0, projected: 1200 },
+  { date: "31/05", confirmed: 0, projected: 1300 },
+  { date: "01/06", confirmed: 0, projected: 1400 },
+  { date: "02/06", confirmed: 0, projected: 850 },
+  { date: "03/06", confirmed: 0, projected: 750 },
+  { date: "04/06", confirmed: 0, projected: 1100 },
+  { date: "05/06", confirmed: 0, projected: 1250 },
+  { date: "06/06", confirmed: 0, projected: 950 },
+  { date: "07/06", confirmed: 0, projected: 1300 },
+  { date: "08/06", confirmed: 0, projected: 1450 },
+  { date: "09/06", confirmed: 0, projected: 1200 },
+  { date: "10/06", confirmed: 0, projected: 980 },
+  { date: "11/06", confirmed: 0, projected: 1050 },
+  { date: "12/06", confirmed: 0, projected: 1150 },
 ];
 
-const projectionsPerService = [
-  { name: "Corte", projected: 4500 },
-  { name: "Coloração", projected: 3200 },
-  { name: "Manicure", projected: 2100 },
-  { name: "Depilação", projected: 1800 },
-  { name: "Outros", projected: 1200 },
-];
+// Projections per service data organized by professional
+const projectionsPerServiceByProfessional = {
+  all: [
+    { name: "Corte", projected: 4500 },
+    { name: "Coloração", projected: 3200 },
+    { name: "Manicure", projected: 2100 },
+    { name: "Depilação", projected: 1800 },
+    { name: "Outros", projected: 1200 },
+  ],
+  ana: [
+    { name: "Corte", projected: 2200 },
+    { name: "Coloração", projected: 1100 },
+    { name: "Manicure", projected: 250 },
+    { name: "Depilação", projected: 200 },
+    { name: "Outros", projected: 100 },
+  ],
+  carlos: [
+    { name: "Corte", projected: 1800 },
+    { name: "Coloração", projected: 950 },
+    { name: "Manicure", projected: 50 },
+    { name: "Depilação", projected: 100 },
+    { name: "Outros", projected: 80 },
+  ],
+  julia: [
+    { name: "Corte", projected: 350 },
+    { name: "Coloração", projected: 200 },
+    { name: "Manicure", projected: 1150 },
+    { name: "Depilação", projected: 500 },
+    { name: "Outros", projected: 150 },
+  ],
+  marcos: [
+    { name: "Corte", projected: 0 },
+    { name: "Coloração", projected: 950 },
+    { name: "Manicure", projected: 100 },
+    { name: "Depilação", projected: 750 },
+    { name: "Outros", projected: 150 },
+  ],
+  patricia: [
+    { name: "Corte", projected: 150 },
+    { name: "Coloração", projected: 0 },
+    { name: "Manicure", projected: 550 },
+    { name: "Depilação", projected: 250 },
+    { name: "Outros", projected: 720 },
+  ],
+};
 
-const projectionsPerProfessional = [
+// Projections per professional data
+const allProjectionsPerProfessional = [
   { name: "Ana", projected: 3850 },
   { name: "Carlos", projected: 2980 },
   { name: "Júlia", projected: 2350 },
@@ -48,6 +103,41 @@ const ProjectionsModule = () => {
   const [cancellationRate, setCancellationRate] = useState(10);
   const [timeFrame, setTimeFrame] = useState("15days");
   const [professional, setProfessional] = useState("all");
+  const [projectionData, setProjectionData] = useState<typeof allProjectionData>([]);
+  const [projectionsPerService, setProjectionsPerService] = useState(projectionsPerServiceByProfessional.all);
+  const [projectionsPerProfessional, setProjectionsPerProfessional] = useState(allProjectionsPerProfessional);
+
+  // Apply timeframe filter and load initial data
+  useEffect(() => {
+    // Filter data based on timeframe
+    let daysToShow = 15;
+    if (timeFrame === "7days") daysToShow = 7;
+    if (timeFrame === "30days") daysToShow = 30;
+    
+    // Get first X days from the data
+    setProjectionData(allProjectionData.slice(0, daysToShow));
+  }, [timeFrame]);
+
+  // Apply professional filter
+  useEffect(() => {
+    // Update services data based on selected professional
+    if (professional in projectionsPerServiceByProfessional) {
+      setProjectionsPerService(projectionsPerServiceByProfessional[professional as keyof typeof projectionsPerServiceByProfessional]);
+    }
+
+    // For the professionals chart, show all professionals or filter it out if a specific professional is selected
+    if (professional === "all") {
+      setProjectionsPerProfessional(allProjectionsPerProfessional);
+    } else {
+      // Show only the selected professional
+      setProjectionsPerProfessional(
+        allProjectionsPerProfessional.filter(p => 
+          p.name.toLowerCase() === professional || 
+          professional === 'all'
+        )
+      );
+    }
+  }, [professional]);
 
   // Apply cancellation rate to projections
   const adjustedProjectionData = projectionData.map(item => ({
@@ -59,6 +149,7 @@ const ProjectionsModule = () => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
   };
 
+  // Calculate totals based on the filtered data
   const totalConfirmed = projectionData.reduce((sum, item) => sum + item.confirmed, 0);
   const totalProjected = projectionData.reduce((sum, item) => sum + item.projected, 0);
   const totalProjectedAdjusted = totalProjected * (1 - cancellationRate / 100);
@@ -69,7 +160,11 @@ const ProjectionsModule = () => {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle>Receita Confirmada</CardTitle>
-            <CardDescription>Próximos 15 dias</CardDescription>
+            <CardDescription>
+              {timeFrame === "7days" && "Próximos 7 dias"}
+              {timeFrame === "15days" && "Próximos 15 dias"}
+              {timeFrame === "30days" && "Próximos 30 dias"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
@@ -169,7 +264,11 @@ const ProjectionsModule = () => {
           <Card>
             <CardHeader>
               <CardTitle>Projeção de Receita</CardTitle>
-              <CardDescription>Confirmado vs. Projetado</CardDescription>
+              <CardDescription>
+                {professional === "all" 
+                  ? "Confirmado vs. Projetado" 
+                  : `Projeção para: ${professional.charAt(0).toUpperCase() + professional.slice(1)}`}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[400px]" config={{
@@ -213,7 +312,11 @@ const ProjectionsModule = () => {
           <Card>
             <CardHeader>
               <CardTitle>Projeção por Serviço</CardTitle>
-              <CardDescription>Receita projetada para os próximos 15 dias</CardDescription>
+              <CardDescription>
+                {professional === "all" 
+                  ? "Receita projetada para todos profissionais" 
+                  : `Receita projetada para: ${professional.charAt(0).toUpperCase() + professional.slice(1)}`}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[400px]" config={{
@@ -236,7 +339,11 @@ const ProjectionsModule = () => {
           <Card>
             <CardHeader>
               <CardTitle>Projeção por Profissional</CardTitle>
-              <CardDescription>Receita projetada para os próximos 15 dias</CardDescription>
+              <CardDescription>
+                {timeFrame === "7days" && "Receita projetada para os próximos 7 dias"}
+                {timeFrame === "15days" && "Receita projetada para os próximos 15 dias"}
+                {timeFrame === "30days" && "Receita projetada para os próximos 30 dias"}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[400px]" config={{
