@@ -1,8 +1,8 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartContainer } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, BarChart, Bar, Legend } from "recharts";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const cashFlowData = [
   { name: '01/05', revenue: 1200, expenses: 500, balance: 700 },
@@ -37,50 +37,62 @@ const projectionData = [
 ];
 
 const FinancialDashboard = () => {
+  const { t, language } = useTranslation();
+  
+  const formatCurrency = (value: number) => {
+    let currencyCode = 'BRL';
+    if (language === 'en') currencyCode = 'USD';
+    else if (language === 'pt-PT') currencyCode = 'EUR';
+    else if (language === 'cs') currencyCode = 'CZK';
+    else if (language === 'is') currencyCode = 'ISK';
+    
+    return new Intl.NumberFormat(language, { style: 'currency', currency: currencyCode }).format(value);
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Receita Total</CardTitle>
-            <CardDescription>Mês atual</CardDescription>
+            <CardTitle>{t('summary.revenue')}</CardTitle>
+            <CardDescription>{t('summary.title')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
-              R$ 12.450,00
+              {formatCurrency(12450)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              +18% em relação ao mês anterior
+              +18% {t('expense.list.description')}
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Despesas Totais</CardTitle>
-            <CardDescription>Mês atual</CardDescription>
+            <CardTitle>{t('summary.expenses')}</CardTitle>
+            <CardDescription>{t('summary.title')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-600">
-              R$ 4.850,00
+              {formatCurrency(4850)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              -3% em relação ao mês anterior
+              -3% {t('expense.list.description')}
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Saldo do Mês</CardTitle>
-            <CardDescription>Atual</CardDescription>
+            <CardTitle>{t('summary.balance')}</CardTitle>
+            <CardDescription>{t('balance.current')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              R$ 7.600,00
+              {formatCurrency(7600)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              +32% em relação ao mês anterior
+              +32% {t('expense.list.description')}
             </p>
           </CardContent>
         </Card>
@@ -88,22 +100,22 @@ const FinancialDashboard = () => {
 
       <Tabs defaultValue="cashflow" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="cashflow">Fluxo de Caixa</TabsTrigger>
-          <TabsTrigger value="revenue">Receitas</TabsTrigger>
-          <TabsTrigger value="projections">Projeções</TabsTrigger>
+          <TabsTrigger value="cashflow">{t('balance.evolution')}</TabsTrigger>
+          <TabsTrigger value="revenue">{t('summary.revenue')}</TabsTrigger>
+          <TabsTrigger value="projections">{t('tabs.projections')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="cashflow">
           <Card>
             <CardHeader>
-              <CardTitle>Fluxo de Caixa</CardTitle>
-              <CardDescription>Visão mensal</CardDescription>
+              <CardTitle>{t('balance.evolution')}</CardTitle>
+              <CardDescription>{t('balance.history')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[300px]" config={{
-                revenue: { label: "Receita" },
-                expenses: { label: "Despesas" },
-                balance: { label: "Saldo" }
+                revenue: { label: t('summary.revenue') },
+                expenses: { label: t('summary.expenses') },
+                balance: { label: t('summary.balance') }
               }}>
                 <AreaChart data={cashFlowData}>
                   <defs>
@@ -133,11 +145,11 @@ const FinancialDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Receita por Serviço</CardTitle>
+                <CardTitle>{t('summary.revenue')} {t('expense.add.category')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ChartContainer className="h-[300px]" config={{
-                  value: { label: "Valor" }
+                  value: { label: t('expense.list.amount') }
                 }}>
                   <BarChart data={revenueByServiceData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -153,11 +165,11 @@ const FinancialDashboard = () => {
             
             <Card>
               <CardHeader>
-                <CardTitle>Receita por Profissional</CardTitle>
+                <CardTitle>{t('summary.revenue')} {t('expense.add.description')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ChartContainer className="h-[300px]" config={{
-                  revenue: { label: "Receita" }
+                  revenue: { label: t('summary.revenue') }
                 }}>
                   <BarChart data={revenueByProfessionalData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -176,13 +188,13 @@ const FinancialDashboard = () => {
         <TabsContent value="projections">
           <Card>
             <CardHeader>
-              <CardTitle>Projeção de Receita</CardTitle>
-              <CardDescription>Próximos 30 dias</CardDescription>
+              <CardTitle>{t('tabs.projections')} {t('summary.revenue')}</CardTitle>
+              <CardDescription>{t('balance.projection')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[300px]" config={{
-                actual: { label: "Confirmado" },
-                projected: { label: "Projetado" }
+                actual: { label: t('balance.current') },
+                projected: { label: t('balance.projection') }
               }}>
                 <LineChart data={projectionData}>
                   <CartesianGrid strokeDasharray="3 3" />

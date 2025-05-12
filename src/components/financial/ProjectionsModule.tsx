@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Mock data base
 const allProjectionData = [
@@ -100,6 +101,7 @@ const allProjectionsPerProfessional = [
 ];
 
 const ProjectionsModule = () => {
+  const { t, language } = useTranslation();
   const [cancellationRate, setCancellationRate] = useState(10);
   const [timeFrame, setTimeFrame] = useState("15days");
   const [professional, setProfessional] = useState("all");
@@ -146,7 +148,13 @@ const ProjectionsModule = () => {
   }));
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    let currencyCode = 'BRL';
+    if (language === 'en') currencyCode = 'USD';
+    else if (language === 'pt-PT') currencyCode = 'EUR';
+    else if (language === 'cs') currencyCode = 'CZK';
+    else if (language === 'is') currencyCode = 'ISK';
+    
+    return new Intl.NumberFormat(language, { style: 'currency', currency: currencyCode }).format(value);
   };
 
   // Calculate totals based on the filtered data
@@ -154,16 +162,29 @@ const ProjectionsModule = () => {
   const totalProjected = projectionData.reduce((sum, item) => sum + item.projected, 0);
   const totalProjectedAdjusted = totalProjected * (1 - cancellationRate / 100);
 
+  const getTimeFrameLabel = () => {
+    switch (timeFrame) {
+      case "7days": 
+        return t('balance.projection').replace('30', '7'); // Reuse existing translation but replace days
+      case "15days": 
+        return t('balance.projection').replace('30', '15');
+      case "30days": 
+        return t('balance.projection');
+      default: 
+        return t('balance.projection');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Receita Confirmada</CardTitle>
+            <CardTitle>{t('balance.current')}</CardTitle>
             <CardDescription>
-              {timeFrame === "7days" && "Próximos 7 dias"}
-              {timeFrame === "15days" && "Próximos 15 dias"}
-              {timeFrame === "30days" && "Próximos 30 dias"}
+              {timeFrame === "7days" && t('balance.projection').replace('30', '7')}
+              {timeFrame === "15days" && t('balance.projection').replace('30', '15')}
+              {timeFrame === "30days" && t('balance.projection')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -175,8 +196,8 @@ const ProjectionsModule = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Projeção Total</CardTitle>
-            <CardDescription>Sem ajustes</CardDescription>
+            <CardTitle>{t('balance.projection')}</CardTitle>
+            <CardDescription>{t('expense.list.total')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
@@ -187,8 +208,8 @@ const ProjectionsModule = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Projeção Ajustada</CardTitle>
-            <CardDescription>Com taxa de cancelamento</CardDescription>
+            <CardTitle>{t('balance.projection')}</CardTitle>
+            <CardDescription>{t('balance.adjust.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">
@@ -200,33 +221,33 @@ const ProjectionsModule = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Configurar Projeções</CardTitle>
-          <CardDescription>Ajuste os parâmetros para suas projeções</CardDescription>
+          <CardTitle>{t('tabs.projections')}</CardTitle>
+          <CardDescription>{t('expense.add.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="timeframe">Período</Label>
+              <Label htmlFor="timeframe">{t('expense.add.date')}</Label>
               <Select value={timeFrame} onValueChange={setTimeFrame}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7days">7 dias</SelectItem>
-                  <SelectItem value="15days">15 dias</SelectItem>
-                  <SelectItem value="30days">30 dias</SelectItem>
+                  <SelectItem value="7days">7 {t('expense.add.date')}</SelectItem>
+                  <SelectItem value="15days">15 {t('expense.add.date')}</SelectItem>
+                  <SelectItem value="30days">30 {t('expense.add.date')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="professional">Profissional</Label>
+              <Label htmlFor="professional">{t('expense.add.category')}</Label>
               <Select value={professional} onValueChange={setProfessional}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="all">{t('expense.list.total')}</SelectItem>
                   <SelectItem value="ana">Ana</SelectItem>
                   <SelectItem value="carlos">Carlos</SelectItem>
                   <SelectItem value="julia">Júlia</SelectItem>
@@ -238,7 +259,7 @@ const ProjectionsModule = () => {
             
             <div className="space-y-4">
               <div className="flex justify-between">
-                <Label htmlFor="cancellation">Taxa de Cancelamento: {cancellationRate}%</Label>
+                <Label htmlFor="cancellation">{t('balance.adjust.amount')}: {cancellationRate}%</Label>
               </div>
               <Slider
                 id="cancellation"
@@ -255,26 +276,26 @@ const ProjectionsModule = () => {
 
       <Tabs defaultValue="timeline" className="w-full">
         <TabsList className="mb-4">
-          <TabsTrigger value="timeline">Linha do Tempo</TabsTrigger>
-          <TabsTrigger value="services">Por Serviço</TabsTrigger>
-          <TabsTrigger value="professionals">Por Profissional</TabsTrigger>
+          <TabsTrigger value="timeline">{t('balance.history')}</TabsTrigger>
+          <TabsTrigger value="services">{t('expense.add.category')}</TabsTrigger>
+          <TabsTrigger value="professionals">{t('expense.add.description')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="timeline">
           <Card>
             <CardHeader>
-              <CardTitle>Projeção de Receita</CardTitle>
+              <CardTitle>{t('balance.projection')}</CardTitle>
               <CardDescription>
                 {professional === "all" 
-                  ? "Confirmado vs. Projetado" 
-                  : `Projeção para: ${professional.charAt(0).toUpperCase() + professional.slice(1)}`}
+                  ? t('balance.transactions') 
+                  : `${t('balance.projection')} - ${professional.charAt(0).toUpperCase() + professional.slice(1)}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[400px]" config={{
-                confirmed: { label: "Confirmado" },
-                projected: { label: "Projetado" },
-                projectedAdjusted: { label: "Projetado (Ajustado)" }
+                confirmed: { label: t('balance.current') },
+                projected: { label: t('balance.projection') },
+                projectedAdjusted: { label: `${t('balance.projection')} (${t('balance.adjust.amount')})` }
               }}>
                 <LineChart data={adjustedProjectionData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -311,16 +332,16 @@ const ProjectionsModule = () => {
         <TabsContent value="services">
           <Card>
             <CardHeader>
-              <CardTitle>Projeção por Serviço</CardTitle>
+              <CardTitle>{t('balance.projection')} {t('expense.add.category')}</CardTitle>
               <CardDescription>
                 {professional === "all" 
-                  ? "Receita projetada para todos profissionais" 
-                  : `Receita projetada para: ${professional.charAt(0).toUpperCase() + professional.slice(1)}`}
+                  ? t('summary.revenue') 
+                  : `${t('summary.revenue')}: ${professional.charAt(0).toUpperCase() + professional.slice(1)}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[400px]" config={{
-                projected: { label: "Projetado" }
+                projected: { label: t('balance.projection') }
               }}>
                 <BarChart data={projectionsPerService}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -338,16 +359,16 @@ const ProjectionsModule = () => {
         <TabsContent value="professionals">
           <Card>
             <CardHeader>
-              <CardTitle>Projeção por Profissional</CardTitle>
+              <CardTitle>{t('balance.projection')} {t('expense.add.description')}</CardTitle>
               <CardDescription>
-                {timeFrame === "7days" && "Receita projetada para os próximos 7 dias"}
-                {timeFrame === "15days" && "Receita projetada para os próximos 15 dias"}
-                {timeFrame === "30days" && "Receita projetada para os próximos 30 dias"}
+                {timeFrame === "7days" && t('balance.projection').replace('30', '7')}
+                {timeFrame === "15days" && t('balance.projection').replace('30', '15')}
+                {timeFrame === "30days" && t('balance.projection')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer className="h-[400px]" config={{
-                projected: { label: "Projetado" }
+                projected: { label: t('balance.projection') }
               }}>
                 <BarChart data={projectionsPerProfessional}>
                   <CartesianGrid strokeDasharray="3 3" />

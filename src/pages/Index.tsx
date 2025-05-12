@@ -14,7 +14,17 @@ import { LanguageSelector } from "@/components/ui/language-selector";
 
 const Index = () => {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+
+  const formatCurrency = (value: number) => {
+    let currencyCode = 'BRL';
+    if (language === 'en') currencyCode = 'USD';
+    else if (language === 'pt-PT') currencyCode = 'EUR';
+    else if (language === 'cs') currencyCode = 'CZK';
+    else if (language === 'is') currencyCode = 'ISK';
+    
+    return new Intl.NumberFormat(language, { style: 'currency', currency: currencyCode }).format(value);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -85,15 +95,15 @@ const Index = () => {
               <div className="space-y-4">
                 <div>
                   <p className="text-sm font-medium">{t('summary.revenue')}</p>
-                  <p className="text-2xl font-bold text-green-600">R$ 12.450,00</p>
+                  <p className="text-2xl font-bold text-green-600">{formatCurrency(12450)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t('summary.expenses')}</p>
-                  <p className="text-2xl font-bold text-red-600">R$ 4.850,00</p>
+                  <p className="text-2xl font-bold text-red-600">{formatCurrency(4850)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">{t('summary.balance')}</p>
-                  <p className="text-2xl font-bold">R$ 7.600,00</p>
+                  <p className="text-2xl font-bold">{formatCurrency(7600)}</p>
                 </div>
               </div>
             </CardContent>
