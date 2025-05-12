@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Mock data
 const balanceHistoryData = [
@@ -40,17 +41,24 @@ const transactionsHistory = [
 
 const BalanceModule = () => {
   const { toast } = useToast();
+  const { t, language } = useTranslation();
   const [isAdjustDialogOpen, setIsAdjustDialogOpen] = useState(false);
   const [adjustmentAmount, setAdjustmentAmount] = useState("");
   const [adjustmentReason, setAdjustmentReason] = useState("");
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    let currencyCode = 'BRL';
+    if (language === 'en') currencyCode = 'USD';
+    else if (language === 'pt-PT') currencyCode = 'EUR';
+    else if (language === 'cs') currencyCode = 'CZK';
+    else if (language === 'is') currencyCode = 'ISK';
+    
+    return new Intl.NumberFormat(language, { style: 'currency', currency: currencyCode }).format(value);
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
+    return date.toLocaleDateString(language);
   };
 
   const handleAdjustBalance = (e: React.FormEvent) => {
@@ -59,8 +67,8 @@ const BalanceModule = () => {
     // TODO: Update balance in the database in the future
     
     toast({
-      title: "Saldo ajustado",
-      description: `Ajuste de ${formatCurrency(Number(adjustmentAmount))} realizado com sucesso.`,
+      title: t('balance.adjust.title'),
+      description: `${t('balance.adjust.amount')}: ${formatCurrency(Number(adjustmentAmount))}`,
     });
     
     setAdjustmentAmount("");
@@ -73,8 +81,8 @@ const BalanceModule = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Saldo Atual</CardTitle>
-            <CardDescription>Em caixa</CardDescription>
+            <CardTitle>{t('balance.current')}</CardTitle>
+            <CardDescription>{t('balance.cashIn')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
@@ -85,8 +93,8 @@ const BalanceModule = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Entradas Hoje</CardTitle>
-            <CardDescription>12/05/2025</CardDescription>
+            <CardTitle>{t('balance.cashIn')}</CardTitle>
+            <CardDescription>{formatDate("2025-05-12")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-600">
@@ -97,8 +105,8 @@ const BalanceModule = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Saídas Hoje</CardTitle>
-            <CardDescription>12/05/2025</CardDescription>
+            <CardTitle>{t('balance.cashOut')}</CardTitle>
+            <CardDescription>{formatDate("2025-05-12")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-red-600">
@@ -109,8 +117,8 @@ const BalanceModule = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Projeção (30 dias)</CardTitle>
-            <CardDescription>Saldo estimado</CardDescription>
+            <CardTitle>{t('balance.projection')}</CardTitle>
+            <CardDescription>{t('balance.history')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-600">
@@ -122,18 +130,18 @@ const BalanceModule = () => {
 
       <div className="flex justify-end">
         <Button onClick={() => setIsAdjustDialogOpen(true)}>
-          Ajustar Saldo
+          {t('actions.adjustBalance')}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Evolução do Saldo</CardTitle>
-          <CardDescription>Histórico e projeção futura</CardDescription>
+          <CardTitle>{t('balance.evolution')}</CardTitle>
+          <CardDescription>{t('balance.history')}</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer className="h-[400px]" config={{
-            balance: { label: "Saldo" }
+            balance: { label: t('summary.balance') }
           }}>
             <LineChart data={balanceHistoryData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -158,10 +166,7 @@ const BalanceModule = () => {
                     </svg>
                   );
                 }}
-                strokeDasharray={
-                  // FIX: Use a static value for projected data points instead of a function
-                  "0"  // Default to solid line
-                }
+                strokeDasharray="0"
               />
             </LineChart>
           </ChartContainer>
@@ -170,18 +175,18 @@ const BalanceModule = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Histórico de Transações</CardTitle>
-          <CardDescription>Movimentações recentes</CardDescription>
+          <CardTitle>{t('balance.transactions')}</CardTitle>
+          <CardDescription>{t('balance.transactions_description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
+                  <TableHead>{t('expense.list.date')}</TableHead>
+                  <TableHead>{t('expense.list.description_column')}</TableHead>
+                  <TableHead>{t('expense.list.category')}</TableHead>
+                  <TableHead className="text-right">{t('expense.list.amount')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -192,17 +197,17 @@ const BalanceModule = () => {
                     <TableCell>
                       {transaction.type === "revenue" && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Entrada
+                          {t('balance.type.revenue')}
                         </span>
                       )}
                       {transaction.type === "expense" && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Saída
+                          {t('balance.type.expense')}
                         </span>
                       )}
                       {transaction.type === "adjustment" && (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          Ajuste
+                          {t('balance.type.adjustment')}
                         </span>
                       )}
                     </TableCell>
@@ -228,14 +233,14 @@ const BalanceModule = () => {
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={handleAdjustBalance}>
             <DialogHeader>
-              <DialogTitle>Ajustar Saldo</DialogTitle>
+              <DialogTitle>{t('balance.adjust.title')}</DialogTitle>
               <DialogDescription>
-                Ajuste o saldo atual do caixa manualmente.
+                {t('balance.adjust.description')}
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="amount">Valor do Ajuste (R$)</Label>
+                <Label htmlFor="amount">{t('balance.adjust.amount')}</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -246,15 +251,15 @@ const BalanceModule = () => {
                   required
                 />
                 <p className="text-sm text-muted-foreground">
-                  Use valores positivos para aumentar o saldo ou negativos para diminuir.
+                  {t('balance.adjust.amount_help')}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reason">Motivo do Ajuste</Label>
+                <Label htmlFor="reason">{t('balance.adjust.reason')}</Label>
                 <Textarea
                   id="reason"
-                  placeholder="Descreva o motivo deste ajuste"
+                  placeholder={t('balance.adjust.reason_placeholder')}
                   value={adjustmentReason}
                   onChange={(e) => setAdjustmentReason(e.target.value)}
                   required
@@ -267,9 +272,9 @@ const BalanceModule = () => {
                 type="button" 
                 onClick={() => setIsAdjustDialogOpen(false)}
               >
-                Cancelar
+                {t('balance.adjust.cancel')}
               </Button>
-              <Button type="submit">Confirmar Ajuste</Button>
+              <Button type="submit">{t('balance.adjust.confirm')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
