@@ -14,6 +14,7 @@ export type TranslationKey =
   | 'summary.revenue'
   | 'summary.expenses'
   | 'summary.balance'
+  | 'summary.comparedToPreviousPeriod'
   | 'expense.add.title'
   | 'expense.add.description'
   | 'expense.add.date'
@@ -94,6 +95,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     'summary.revenue': 'Receita',
     'summary.expenses': 'Despesas',
     'summary.balance': 'Saldo',
+    'summary.comparedToPreviousPeriod': 'comparado ao período anterior',
     'expense.add.title': 'Adicionar Nova Despesa',
     'expense.add.description': 'Preencha os detalhes da despesa para adicionar ao sistema.',
     'expense.add.date': 'Data',
@@ -171,6 +173,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     'summary.revenue': 'Receita',
     'summary.expenses': 'Despesas',
     'summary.balance': 'Saldo',
+    'summary.comparedToPreviousPeriod': 'comparado ao período anterior',
     'expense.add.title': 'Adicionar Nova Despesa',
     'expense.add.description': 'Preencha os detalhes da despesa para adicionar ao sistema.',
     'expense.add.date': 'Data',
@@ -248,6 +251,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     'summary.revenue': 'Revenue',
     'summary.expenses': 'Expenses',
     'summary.balance': 'Balance',
+    'summary.comparedToPreviousPeriod': 'compared to previous period',
     'expense.add.title': 'Add New Expense',
     'expense.add.description': 'Fill in the expense details to add to the system.',
     'expense.add.date': 'Date',
@@ -325,6 +329,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     'summary.revenue': 'Příjmy',
     'summary.expenses': 'Výdaje',
     'summary.balance': 'Zůstatek',
+    'summary.comparedToPreviousPeriod': 've srovnání s předchozím obdobím',
     'expense.add.title': 'Přidat nový výdaj',
     'expense.add.description': 'Vyplňte detaily výdaje pro přidání do systému.',
     'expense.add.date': 'Datum',
@@ -402,6 +407,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     'summary.revenue': 'Tekjur',
     'summary.expenses': 'Útgjöld',
     'summary.balance': 'Staða',
+    'summary.comparedToPreviousPeriod': 'samanborið við fyrra tímabil',
     'expense.add.title': 'Bæta við nýjum útgjöldum',
     'expense.add.description': 'Fylltu út upplýsingar um útgjöld til að bæta við kerfið.',
     'expense.add.date': 'Dagsetning',

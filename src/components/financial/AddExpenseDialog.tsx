@@ -28,14 +28,14 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
 
   // Get translated categories
   const categories = [
-    { key: "Fixo", translationKey: "expense.categories.fixed" },
-    { key: "Insumos", translationKey: "expense.categories.supplies" },
-    { key: "Marketing", translationKey: "expense.categories.marketing" },
-    { key: "Manutenção", translationKey: "expense.categories.maintenance" },
-    { key: "Utilidades", translationKey: "expense.categories.utilities" },
-    { key: "Salários", translationKey: "expense.categories.salaries" },
-    { key: "Impostos", translationKey: "expense.categories.taxes" },
-    { key: "Outros", translationKey: "expense.categories.others" }
+    { key: "Fixo", translationKey: "expense.categories.fixed" as const },
+    { key: "Insumos", translationKey: "expense.categories.supplies" as const },
+    { key: "Marketing", translationKey: "expense.categories.marketing" as const },
+    { key: "Manutenção", translationKey: "expense.categories.maintenance" as const },
+    { key: "Utilidades", translationKey: "expense.categories.utilities" as const },
+    { key: "Salários", translationKey: "expense.categories.salaries" as const },
+    { key: "Impostos", translationKey: "expense.categories.taxes" as const },
+    { key: "Outros", translationKey: "expense.categories.others" as const }
   ];
 
   const handleSubmit = (e: React.FormEvent) => {

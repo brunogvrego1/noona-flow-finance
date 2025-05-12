@@ -30,8 +30,22 @@ interface ExpensesModuleProps {
   openAddExpenseDialog: () => void;
 }
 
-const getCategoryTranslationKey = (category: string): string => {
-  const categoryMap: Record<string, string> = {
+const getCategoryTranslationKey = (category: string): "expense.categories.fixed" | 
+                                                      "expense.categories.supplies" | 
+                                                      "expense.categories.marketing" | 
+                                                      "expense.categories.maintenance" | 
+                                                      "expense.categories.utilities" | 
+                                                      "expense.categories.salaries" | 
+                                                      "expense.categories.taxes" | 
+                                                      "expense.categories.others" => {
+  const categoryMap: Record<string, "expense.categories.fixed" | 
+                                    "expense.categories.supplies" | 
+                                    "expense.categories.marketing" | 
+                                    "expense.categories.maintenance" | 
+                                    "expense.categories.utilities" | 
+                                    "expense.categories.salaries" | 
+                                    "expense.categories.taxes" | 
+                                    "expense.categories.others"> = {
     'Fixo': 'expense.categories.fixed',
     'Insumos': 'expense.categories.supplies',
     'Marketing': 'expense.categories.marketing',
@@ -42,7 +56,7 @@ const getCategoryTranslationKey = (category: string): string => {
     'Outros': 'expense.categories.others',
   };
   
-  return categoryMap[category] || category;
+  return categoryMap[category] || 'expense.categories.others';
 };
 
 const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
