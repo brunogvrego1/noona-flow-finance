@@ -9,17 +9,23 @@ import BalanceModule from "@/components/financial/BalanceModule";
 import { ArrowUpRight, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { AddExpenseDialog } from "@/components/financial/AddExpenseDialog";
+import { useTranslation } from "@/hooks/useTranslation";
+import { LanguageSelector } from "@/components/ui/language-selector";
 
 const Index = () => {
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Financeiro Noona HQ</h1>
-        <p className="text-muted-foreground mt-2">
-          Gerencie suas finanças com facilidade e integração completa
-        </p>
+      <header className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{t('header.title')}</h1>
+          <p className="text-muted-foreground mt-2">
+            {t('header.subtitle')}
+          </p>
+        </div>
+        <LanguageSelector />
       </header>
 
       <div className="flex flex-col-reverse md:flex-row gap-6">
@@ -27,10 +33,10 @@ const Index = () => {
         <div className="flex-1">
           <Tabs defaultValue="dashboard" className="w-full">
             <TabsList className="grid grid-cols-4 mb-8">
-              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-              <TabsTrigger value="expenses">Despesas</TabsTrigger>
-              <TabsTrigger value="projections">Projeções</TabsTrigger>
-              <TabsTrigger value="balance">Saldo</TabsTrigger>
+              <TabsTrigger value="dashboard">{t('tabs.dashboard')}</TabsTrigger>
+              <TabsTrigger value="expenses">{t('tabs.expenses')}</TabsTrigger>
+              <TabsTrigger value="projections">{t('tabs.projections')}</TabsTrigger>
+              <TabsTrigger value="balance">{t('tabs.balance')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="dashboard">
@@ -55,38 +61,38 @@ const Index = () => {
         <div className="w-full md:w-80">
           <Card>
             <CardHeader>
-              <CardTitle>Ações Rápidas</CardTitle>
+              <CardTitle>{t('actions.quickActions')}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <Button 
                 onClick={() => setIsAddExpenseOpen(true)} 
                 className="w-full justify-between"
               >
-                Nova Despesa <PlusCircle size={16} />
+                {t('actions.newExpense')} <PlusCircle size={16} />
               </Button>
               <Button variant="outline" className="w-full justify-between">
-                Ajustar Saldo <ArrowUpRight size={16} />
+                {t('actions.adjustBalance')} <ArrowUpRight size={16} />
               </Button>
             </CardContent>
           </Card>
 
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Resumo do Mês</CardTitle>
+              <CardTitle>{t('summary.title')}</CardTitle>
               <CardDescription>Maio 2025</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium">Receita</p>
+                  <p className="text-sm font-medium">{t('summary.revenue')}</p>
                   <p className="text-2xl font-bold text-green-600">R$ 12.450,00</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Despesas</p>
+                  <p className="text-sm font-medium">{t('summary.expenses')}</p>
                   <p className="text-2xl font-bold text-red-600">R$ 4.850,00</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Saldo</p>
+                  <p className="text-sm font-medium">{t('summary.balance')}</p>
                   <p className="text-2xl font-bold">R$ 7.600,00</p>
                 </div>
               </div>

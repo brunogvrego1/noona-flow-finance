@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -27,6 +28,7 @@ const categories = [
 
 export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [expenseData, setExpenseData] = useState({
     date: new Date().toISOString().split('T')[0],
     description: "",
@@ -41,7 +43,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
     // TODO: Add expense to database in the future
     
     toast({
-      title: "Despesa adicionada",
+      title: t('expense.add.title'),
       description: `${expenseData.description} - R$ ${expenseData.amount}`,
     });
     
@@ -69,15 +71,15 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
       <DialogContent className="sm:max-w-[500px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Adicionar Nova Despesa</DialogTitle>
+            <DialogTitle>{t('expense.add.title')}</DialogTitle>
             <DialogDescription>
-              Preencha os detalhes da despesa para adicionar ao sistema.
+              {t('expense.add.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
+                <Label htmlFor="date">{t('expense.add.date')}</Label>
                 <Input
                   id="date"
                   name="date"
@@ -88,7 +90,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="amount">Valor (R$)</Label>
+                <Label htmlFor="amount">{t('expense.add.amount')}</Label>
                 <Input
                   id="amount"
                   name="amount"
@@ -103,11 +105,11 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descrição</Label>
+              <Label htmlFor="description">{t('expense.add.description_label')}</Label>
               <Input
                 id="description"
                 name="description"
-                placeholder="Descreva a despesa"
+                placeholder={t('expense.add.description_label')}
                 value={expenseData.description}
                 onChange={handleChange}
                 required
@@ -115,7 +117,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Categoria</Label>
+              <Label htmlFor="category">{t('expense.add.category')}</Label>
               <Select
                 value={expenseData.category}
                 onValueChange={(value) =>
@@ -123,7 +125,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 }
               >
                 <SelectTrigger id="category">
-                  <SelectValue placeholder="Selecione uma categoria" />
+                  <SelectValue placeholder={t('expense.add.category_placeholder')} />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -136,11 +138,11 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Notas (opcional)</Label>
+              <Label htmlFor="notes">{t('expense.add.notes')}</Label>
               <Textarea
                 id="notes"
                 name="notes"
-                placeholder="Informações adicionais sobre esta despesa"
+                placeholder={t('expense.add.notes_placeholder')}
               />
             </div>
 
@@ -152,7 +154,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                   setExpenseData((prev) => ({ ...prev, recurring: checked }))
                 }
               />
-              <Label htmlFor="recurring">Despesa recorrente mensal</Label>
+              <Label htmlFor="recurring">{t('expense.add.recurring')}</Label>
             </div>
           </div>
           <DialogFooter>
@@ -161,9 +163,9 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
               type="button" 
               onClick={() => onOpenChange(false)}
             >
-              Cancelar
+              {t('expense.add.cancel')}
             </Button>
-            <Button type="submit">Adicionar Despesa</Button>
+            <Button type="submit">{t('expense.add.add')}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

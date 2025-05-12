@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { PlusCircle, Trash, Edit, ArrowDownUp } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Mock expense data
 const initialExpenses = [
@@ -25,6 +26,7 @@ interface ExpensesModuleProps {
 const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
   const [expenses] = useState(initialExpenses);
   const [searchQuery, setSearchQuery] = useState("");
+  const { t, language } = useTranslation();
 
   const filteredExpenses = expenses.filter(expense =>
     expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -34,12 +36,23 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
   const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    const currencyMap: Record<string, string> = {
+      'pt-BR': 'BRL',
+      'pt-PT': 'EUR',
+      'en': 'USD',
+      'cs': 'CZK',
+      'is': 'ISK'
+    };
+    
+    return new Intl.NumberFormat(language === 'en' ? 'en-US' : language, { 
+      style: 'currency', 
+      currency: currencyMap[language] || 'USD'
+    }).format(value);
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
+    return date.toLocaleDateString(language === 'en' ? 'en-US' : language);
   };
 
   return (
@@ -47,7 +60,7 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="relative w-full max-w-sm">
           <Input
-            placeholder="Pesquisar despesas..."
+            placeholder={t('expense.list.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -66,15 +79,15 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
           </svg>
         </div>
         <Button onClick={openAddExpenseDialog}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Nova Despesa
+          <PlusCircle className="mr-2 h-4 w-4" /> {t('actions.newExpense')}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Despesas</CardTitle>
+          <CardTitle>{t('expense.list.title')}</CardTitle>
           <CardDescription>
-            Gerenciamento de todas as despesas do seu negócio
+            {t('expense.list.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -82,12 +95,12 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-32">Data <ArrowDownUp className="inline h-4 w-4" /></TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Categoria</TableHead>
-                  <TableHead className="text-right">Valor</TableHead>
-                  <TableHead className="w-24">Recorrente</TableHead>
-                  <TableHead className="w-20 text-right">Ações</TableHead>
+                  <TableHead className="w-32">{t('expense.list.date')} <ArrowDownUp className="inline h-4 w-4" /></TableHead>
+                  <TableHead>{t('expense.list.description_column')}</TableHead>
+                  <TableHead>{t('expense.list.category')}</TableHead>
+                  <TableHead className="text-right">{t('expense.list.amount')}</TableHead>
+                  <TableHead className="w-24">{t('expense.list.recurring')}</TableHead>
+                  <TableHead className="w-20 text-right">{t('expense.list.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -103,11 +116,11 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
                       <TableCell>
                         {expense.recurring ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Sim
+                            {t('expense.list.yes')}
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            Não
+                            {t('expense.list.no')}
                           </span>
                         )}
                       </TableCell>
@@ -126,7 +139,7 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-6">
-                      Nenhuma despesa encontrada
+                      {t('expense.list.empty')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -137,11 +150,14 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
         <CardFooter className="flex justify-between">
           <div>
             <p className="text-sm text-muted-foreground">
-              {filteredExpenses.length} despesa{filteredExpenses.length !== 1 ? "s" : ""}
+              {t('expense.list.count', { 
+                count: filteredExpenses.length,
+                plural: filteredExpenses.length !== 1 ? "s" : ""
+              })}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-medium text-muted-foreground">Total</p>
+            <p className="text-sm font-medium text-muted-foreground">{t('expense.list.total')}</p>
             <p className="text-xl font-bold">{formatCurrency(totalExpenses)}</p>
           </div>
         </CardFooter>
