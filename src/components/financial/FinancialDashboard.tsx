@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartContainer } from "@/components/ui/chart";
@@ -166,6 +167,7 @@ const FinancialDashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle>{t('summary.revenue')} {t('expense.add.description')}</CardTitle>
+                <CardDescription>Employee</CardDescription>
               </CardHeader>
               <CardContent>
                 <ChartContainer className="h-[300px]" config={{
