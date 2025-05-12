@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Button } from "@/components/ui/button";
 
 // Mock data base
 const allProjectionData = [
@@ -222,7 +222,7 @@ const ProjectionsModule = () => {
       <Card>
         <CardHeader>
           <CardTitle>{t('tabs.projections')}</CardTitle>
-          <CardDescription>{t('expense.add.description')}</CardDescription>
+          <CardDescription>{t('balance.adjust.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -269,6 +269,7 @@ const ProjectionsModule = () => {
                 value={[cancellationRate]}
                 onValueChange={(values) => setCancellationRate(values[0])}
               />
+              <Button className="w-full mt-2" size="sm">{t('balance.adjust.confirm')}</Button>
             </div>
           </div>
         </CardContent>
