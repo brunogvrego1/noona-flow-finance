@@ -1,4 +1,3 @@
-
 export type Language = 'pt-BR' | 'pt-PT' | 'en' | 'cs' | 'is';
 
 export type TranslationKey = 
@@ -64,9 +63,7 @@ export type TranslationKey =
   | 'common.confirm'
   | 'language.select';
 
-export interface TranslationDictionary {
-  [key in TranslationKey]: string;
-}
+export type TranslationDictionary = Record<TranslationKey, string>;
 
 export const translations: Record<Language, TranslationDictionary> = {
   'pt-BR': {
@@ -312,7 +309,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     'balance.adjust.title': 'Upravit zůstatek',
     'balance.adjust.description': 'Ručně upravit aktuální zůstatek v pokladně.',
     'balance.adjust.amount': 'Částka úpravy (Kč)',
-    'balance.adjust.amount_help': 'Použijte kladné hodnoty pro zvýšení nebo záporné pro snížení zůstatku.',
+    'balance.adjust.amount_help': 'Použijte kladné hodnoty pro zvýšení nebo záporné hodnoty pro snížení zůstatku.',
     'balance.adjust.reason': 'Důvod úpravy',
     'balance.adjust.reason_placeholder': 'Popište důvod této úpravy',
     'balance.adjust.cancel': 'Zrušit',

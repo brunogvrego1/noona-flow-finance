@@ -11,7 +11,8 @@ interface TranslationContextType {
 
 const defaultLanguage: Language = 'pt-BR';
 
-const availableLanguages = [
+// Fixed type assertion to ensure all codes are properly typed as Language
+const availableLanguages: { code: Language, name: string }[] = [
   { code: 'pt-BR', name: 'Português (Brasil)' },
   { code: 'pt-PT', name: 'Português (Portugal)' },
   { code: 'en', name: 'English' },
