@@ -81,7 +81,7 @@ const Index = () => {
                 {t('actions.newExpense')} <PlusCircle size={16} />
               </Button>
               <Button variant="outline" className="w-full justify-between">
-                {t('expense.add.description')} <ArrowUpRight size={16} />
+                {t('actions.adjustBalance')} <ArrowUpRight size={16} />
               </Button>
             </CardContent>
           </Card>

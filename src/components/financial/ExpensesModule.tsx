@@ -1,37 +1,100 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Trash, Edit, ArrowDownUp } from "lucide-react";
+import { PlusCircle, Trash, Edit, ArrowDownUp, Calendar, Filter } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format as formatDate } from "date-fns";
+import { ChartContainer } from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 // Mock expense data
 const initialExpenses = [
   { id: 1, date: "2025-05-01", description: "Aluguel", category: "Fixo", amount: 2500.00, recurring: true },
   { id: 2, date: "2025-05-03", description: "Produtos de Cabelo", category: "Insumos", amount: 750.50, recurring: false },
   { id: 3, date: "2025-05-05", description: "Água", category: "Utilidades", amount: 120.00, recurring: true },
-  { id: 4, date: "2025-05-08", description: "Luz", category: "Utilidades", amount: 380.00, recurring: true },
-  { id: 5, date: "2025-05-10", description: "Marketing Digital", category: "Marketing", amount: 300.00, recurring: true },
-  { id: 6, date: "2025-05-15", description: "Manutenção Equipamentos", category: "Manutenção", amount: 250.00, recurring: false },
-  { id: 7, date: "2025-05-20", description: "Material de Limpeza", category: "Insumos", amount: 180.00, recurring: false },
-  { id: 8, date: "2025-05-25", description: "Internet", category: "Utilidades", amount: 120.00, recurring: true },
+  { id: 4, date: "2025-04-08", description: "Luz", category: "Utilidades", amount: 380.00, recurring: true },
+  { id: 5, date: "2025-04-10", description: "Marketing Digital", category: "Marketing", amount: 300.00, recurring: true },
+  { id: 6, date: "2025-04-15", description: "Manutenção Equipamentos", category: "Manutenção", amount: 250.00, recurring: false },
+  { id: 7, date: "2025-03-20", description: "Material de Limpeza", category: "Insumos", amount: 180.00, recurring: false },
+  { id: 8, date: "2025-03-25", description: "Internet", category: "Utilidades", amount: 120.00, recurring: true },
 ];
 
 interface ExpensesModuleProps {
   openAddExpenseDialog: () => void;
 }
 
+const getCategoryTranslationKey = (category: string): string => {
+  const categoryMap: Record<string, string> = {
+    'Fixo': 'expense.categories.fixed',
+    'Insumos': 'expense.categories.supplies',
+    'Marketing': 'expense.categories.marketing',
+    'Manutenção': 'expense.categories.maintenance',
+    'Utilidades': 'expense.categories.utilities',
+    'Salários': 'expense.categories.salaries',
+    'Impostos': 'expense.categories.taxes',
+    'Outros': 'expense.categories.others',
+  };
+  
+  return categoryMap[category] || category;
+};
+
 const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
   const [expenses] = useState(initialExpenses);
   const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [isFilterActive, setIsFilterActive] = useState(false);
   const { t, language } = useTranslation();
 
-  const filteredExpenses = expenses.filter(expense =>
-    expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    expense.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const applyDateFilter = () => {
+    if (startDate || endDate) {
+      setIsFilterActive(true);
+    }
+  };
+
+  const resetFilter = () => {
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setIsFilterActive(false);
+  };
+
+  const filteredExpenses = useMemo(() => {
+    let filtered = expenses;
+    
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(expense =>
+        expense.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        expense.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Apply date filter
+    if (isFilterActive) {
+      filtered = filtered.filter(expense => {
+        const expenseDate = new Date(expense.date);
+        
+        if (startDate && endDate) {
+          return expenseDate >= startDate && expenseDate <= endDate;
+        } else if (startDate) {
+          return expenseDate >= startDate;
+        } else if (endDate) {
+          return expenseDate <= endDate;
+        }
+        
+        return true;
+      });
+    }
+    
+    return filtered;
+  }, [expenses, searchQuery, startDate, endDate, isFilterActive]);
 
   const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
 
@@ -50,10 +113,36 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
     }).format(value);
   };
 
-  const formatDate = (dateString: string) => {
+  const formatLocalDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString(language === 'en' ? 'en-US' : language);
   };
+
+  // Generate chart data grouped by month
+  const chartData = useMemo(() => {
+    const expensesByMonth: Record<string, number> = {};
+    
+    // Sort expenses by date
+    const sortedExpenses = [...expenses].sort((a, b) => 
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    
+    sortedExpenses.forEach(expense => {
+      const date = new Date(expense.date);
+      const monthYear = format(date, 'MMM yyyy');
+      
+      if (!expensesByMonth[monthYear]) {
+        expensesByMonth[monthYear] = 0;
+      }
+      
+      expensesByMonth[monthYear] += expense.amount;
+    });
+    
+    return Object.entries(expensesByMonth).map(([month, amount]) => ({
+      month,
+      amount
+    }));
+  }, [expenses]);
 
   return (
     <div className="space-y-6">
@@ -78,10 +167,116 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
             />
           </svg>
         </div>
-        <Button onClick={openAddExpenseDialog}>
-          <PlusCircle className="mr-2 h-4 w-4" /> {t('actions.newExpense')}
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                {t('expense.list.date_filter')}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-4" align="end">
+              <div className="space-y-4">
+                <h4 className="font-medium">{t('expense.list.date_filter')}</h4>
+                <div className="space-y-2">
+                  <p className="text-sm">{t('expense.list.start_date')}</p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !startDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {startDate ? formatDate(startDate, "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm">{t('expense.list.end_date')}</p>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !endDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {endDate ? formatDate(endDate, "PPP") : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        initialFocus
+                        className="p-3 pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Button variant="ghost" size="sm" onClick={resetFilter}>
+                    {t('expense.list.reset_filter')}
+                  </Button>
+                  <Button size="sm" onClick={applyDateFilter}>
+                    {t('expense.list.apply_filter')}
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <Button onClick={openAddExpenseDialog}>
+            <PlusCircle className="mr-2 h-4 w-4" /> {t('actions.newExpense')}
+          </Button>
+        </div>
       </div>
+
+      {/* Expense History Chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('expense.list.history_chart')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" angle={-45} textAnchor="end" />
+                <YAxis
+                  tickFormatter={(value) => 
+                    new Intl.NumberFormat(language, { 
+                      notation: 'compact',
+                      compactDisplay: 'short' 
+                    }).format(value)
+                  }
+                />
+                <Tooltip 
+                  formatter={(value) => [formatCurrency(value as number), t('expense.list.amount')]}
+                  labelFormatter={(label) => label}
+                />
+                <Bar dataKey="amount" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -107,9 +302,9 @@ const ExpensesModule = ({ openAddExpenseDialog }: ExpensesModuleProps) => {
                 {filteredExpenses.length > 0 ? (
                   filteredExpenses.map((expense) => (
                     <TableRow key={expense.id}>
-                      <TableCell>{formatDate(expense.date)}</TableCell>
+                      <TableCell>{formatLocalDate(expense.date)}</TableCell>
                       <TableCell>{expense.description}</TableCell>
-                      <TableCell>{expense.category}</TableCell>
+                      <TableCell>{t(getCategoryTranslationKey(expense.category))}</TableCell>
                       <TableCell className="text-right font-medium">
                         {formatCurrency(expense.amount)}
                       </TableCell>

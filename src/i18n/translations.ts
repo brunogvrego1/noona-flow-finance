@@ -40,6 +40,20 @@ export type TranslationKey =
   | 'expense.list.total'
   | 'expense.list.yes'
   | 'expense.list.no'
+  | 'expense.list.date_filter'
+  | 'expense.list.start_date'
+  | 'expense.list.end_date'
+  | 'expense.list.apply_filter'
+  | 'expense.list.reset_filter'
+  | 'expense.list.history_chart'
+  | 'expense.categories.fixed'
+  | 'expense.categories.supplies'
+  | 'expense.categories.marketing'
+  | 'expense.categories.maintenance'
+  | 'expense.categories.utilities'
+  | 'expense.categories.salaries'
+  | 'expense.categories.taxes'
+  | 'expense.categories.others'
   | 'balance.current'
   | 'balance.cashIn'
   | 'balance.cashOut'
@@ -106,6 +120,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     'expense.list.total': 'Total',
     'expense.list.yes': 'Sim',
     'expense.list.no': 'Não',
+    'expense.list.date_filter': 'Filtrar por data',
+    'expense.list.start_date': 'Data inicial',
+    'expense.list.end_date': 'Data final',
+    'expense.list.apply_filter': 'Aplicar filtro',
+    'expense.list.reset_filter': 'Limpar filtro',
+    'expense.list.history_chart': 'Histórico de despesas',
+    'expense.categories.fixed': 'Fixo',
+    'expense.categories.supplies': 'Insumos',
+    'expense.categories.marketing': 'Marketing',
+    'expense.categories.maintenance': 'Manutenção',
+    'expense.categories.utilities': 'Utilidades',
+    'expense.categories.salaries': 'Salários',
+    'expense.categories.taxes': 'Impostos',
+    'expense.categories.others': 'Outros',
     'balance.current': 'Saldo Atual',
     'balance.cashIn': 'Entradas Hoje',
     'balance.cashOut': 'Saídas Hoje',
@@ -169,6 +197,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     'expense.list.total': 'Total',
     'expense.list.yes': 'Sim',
     'expense.list.no': 'Não',
+    'expense.list.date_filter': 'Filtrar por data',
+    'expense.list.start_date': 'Data inicial',
+    'expense.list.end_date': 'Data final',
+    'expense.list.apply_filter': 'Aplicar filtro',
+    'expense.list.reset_filter': 'Limpar filtro',
+    'expense.list.history_chart': 'Histórico de despesas',
+    'expense.categories.fixed': 'Fixo',
+    'expense.categories.supplies': 'Materiais',
+    'expense.categories.marketing': 'Marketing',
+    'expense.categories.maintenance': 'Manutenção',
+    'expense.categories.utilities': 'Utilidades',
+    'expense.categories.salaries': 'Salários',
+    'expense.categories.taxes': 'Impostos',
+    'expense.categories.others': 'Outros',
     'balance.current': 'Saldo Atual',
     'balance.cashIn': 'Entradas Hoje',
     'balance.cashOut': 'Saídas Hoje',
@@ -232,6 +274,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     'expense.list.total': 'Total',
     'expense.list.yes': 'Yes',
     'expense.list.no': 'No',
+    'expense.list.date_filter': 'Filter by date',
+    'expense.list.start_date': 'Start date',
+    'expense.list.end_date': 'End date',
+    'expense.list.apply_filter': 'Apply filter',
+    'expense.list.reset_filter': 'Reset filter',
+    'expense.list.history_chart': 'Expense History',
+    'expense.categories.fixed': 'Fixed',
+    'expense.categories.supplies': 'Supplies',
+    'expense.categories.marketing': 'Marketing',
+    'expense.categories.maintenance': 'Maintenance',
+    'expense.categories.utilities': 'Utilities',
+    'expense.categories.salaries': 'Salaries',
+    'expense.categories.taxes': 'Taxes',
+    'expense.categories.others': 'Others',
     'balance.current': 'Current Balance',
     'balance.cashIn': 'Today\'s Income',
     'balance.cashOut': 'Today\'s Expenses',
@@ -295,6 +351,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     'expense.list.total': 'Celkem',
     'expense.list.yes': 'Ano',
     'expense.list.no': 'Ne',
+    'expense.list.date_filter': 'Filtrovat podle data',
+    'expense.list.start_date': 'Počáteční datum',
+    'expense.list.end_date': 'Koncové datum',
+    'expense.list.apply_filter': 'Použít filtr',
+    'expense.list.reset_filter': 'Resetovat filtr',
+    'expense.list.history_chart': 'Historie výdajů',
+    'expense.categories.fixed': 'Fixní',
+    'expense.categories.supplies': 'Zásoby',
+    'expense.categories.marketing': 'Marketing',
+    'expense.categories.maintenance': 'Údržba',
+    'expense.categories.utilities': 'Služby',
+    'expense.categories.salaries': 'Mzdy',
+    'expense.categories.taxes': 'Daně',
+    'expense.categories.others': 'Ostatní',
     'balance.current': 'Aktuální zůstatek',
     'balance.cashIn': 'Dnešní příjmy',
     'balance.cashOut': 'Dnešní výdaje',
@@ -358,6 +428,20 @@ export const translations: Record<Language, TranslationDictionary> = {
     'expense.list.total': 'Samtals',
     'expense.list.yes': 'Já',
     'expense.list.no': 'Nei',
+    'expense.list.date_filter': 'Sía eftir dagsetningu',
+    'expense.list.start_date': 'Upphafsdagur',
+    'expense.list.end_date': 'Lokadagur',
+    'expense.list.apply_filter': 'Nota síu',
+    'expense.list.reset_filter': 'Endurstilla síu',
+    'expense.list.history_chart': 'Útgjaldaferill',
+    'expense.categories.fixed': 'Fast',
+    'expense.categories.supplies': 'Birgðir',
+    'expense.categories.marketing': 'Markaðssetning',
+    'expense.categories.maintenance': 'Viðhald',
+    'expense.categories.utilities': 'Þjónustugjöld',
+    'expense.categories.salaries': 'Laun',
+    'expense.categories.taxes': 'Skattar',
+    'expense.categories.others': 'Annað',
     'balance.current': 'Núverandi staða',
     'balance.cashIn': 'Innkoma dagsins',
     'balance.cashOut': 'Útgjöld dagsins',

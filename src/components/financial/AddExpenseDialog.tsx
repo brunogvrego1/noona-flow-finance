@@ -15,20 +15,9 @@ interface AddExpenseDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const categories = [
-  "Fixo",
-  "Insumos",
-  "Marketing",
-  "Manutenção",
-  "Utilidades",
-  "Salários",
-  "Impostos",
-  "Outros"
-];
-
 export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) {
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [expenseData, setExpenseData] = useState({
     date: new Date().toISOString().split('T')[0],
     description: "",
@@ -37,14 +26,32 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
     recurring: false,
   });
 
+  // Get translated categories
+  const categories = [
+    { key: "Fixo", translationKey: "expense.categories.fixed" },
+    { key: "Insumos", translationKey: "expense.categories.supplies" },
+    { key: "Marketing", translationKey: "expense.categories.marketing" },
+    { key: "Manutenção", translationKey: "expense.categories.maintenance" },
+    { key: "Utilidades", translationKey: "expense.categories.utilities" },
+    { key: "Salários", translationKey: "expense.categories.salaries" },
+    { key: "Impostos", translationKey: "expense.categories.taxes" },
+    { key: "Outros", translationKey: "expense.categories.others" }
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     // TODO: Add expense to database in the future
     
+    // Get currency symbol based on language
+    const currencySymbol = language === 'pt-BR' ? 'R$' : 
+                          language === 'pt-PT' ? '€' : 
+                          language === 'en' ? '$' : 
+                          language === 'cs' ? 'Kč' : 'kr';
+    
     toast({
       title: t('expense.add.title'),
-      description: `${expenseData.description} - R$ ${expenseData.amount}`,
+      description: `${expenseData.description} - ${currencySymbol} ${expenseData.amount}`,
     });
     
     // Reset form
@@ -129,8 +136,8 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                    <SelectItem key={category.key} value={category.key}>
+                      {t(category.translationKey)}
                     </SelectItem>
                   ))}
                 </SelectContent>
